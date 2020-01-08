@@ -4,7 +4,7 @@ from num2words import num2words
 from collections import Counter, deque
 from operator import itemgetter
 
-from autosynch.config import cmudict_path, nettalk_path
+from config import cmudict_path, nettalk_path
 
 class SyllableCounter(object):
     """ Helper class for counting number of syllables in lyrics.

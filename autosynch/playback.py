@@ -8,7 +8,7 @@ import wave
 import pyaudio
 import yaml
 
-from autosynch.align import line_align
+from align import line_align
 
 def playback(audio_file, align_file, artist=None, song=None, save=None,
              chunk_size=1024, verbose=False):

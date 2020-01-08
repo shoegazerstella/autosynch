@@ -8,17 +8,17 @@ from math import sqrt
 from statistics import mean, stdev
 from swaglyrics.cli import get_lyrics
 
-from autosynch.snd import SND
-from autosynch.syllable_counter import SyllableCounter
-from autosynch.mad_twinnet.scripts import twinnet
-from autosynch.config import resources_dir, dp_err_matrix
+from snd import SND
+from syllable_counter import SyllableCounter
+from mad_twinnet.scripts import twinnet
+from config import resources_dir, dp_err_matrix
 
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s.%(msecs)03d - %(levelname)s - %(message)s',
                     datefmt='%H:%M:%S')
 
 def line_align(songs, dump_dir, boundary_algorithm='olda',
-               label_algorithm='fmc2d', do_twinnet=True):
+               label_algorithm='fmc2d', do_twinnet=False):
     """
     Aligns given audio with lyrics by line. If dump_dir is None, no timestamp
     yml is created.
@@ -52,7 +52,13 @@ def line_align(songs, dump_dir, boundary_algorithm='olda',
         paths = [song['path'] for song in songs]
         twinnet.twinnet_process(paths)
     else:
-        logging.info('Skipping MaD TwinNet')
+        #logging.info('Skipping MaD TwinNet')
+        print('Performing source separation using spleeter..')
+        audio_path = songs[0]['path']
+        destination = os.path.splitext(audio_path)[0]
+        if not os.path.exists(destination):
+            separator = Separator('spleeter:2stems')
+            separator.separate_to_file(audio_descriptor=audio_path, destination=destination)
 
     total_align_data = []
 
@@ -65,6 +71,8 @@ def line_align(songs, dump_dir, boundary_algorithm='olda',
         # Get file names
         mixed_path = song['path']
         voice_path = os.path.splitext(song['path'])[0] + '_voice.wav'
+        if not do_twinnet:
+            voice_path = os.path.join(destination, 'vocals.wav')
 
         # Get lyrics from Genius
         lyrics = get_lyrics(song['song'], song['artist'])
