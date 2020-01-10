@@ -10,15 +10,17 @@ from swaglyrics.cli import get_lyrics
 
 from snd import SND
 from syllable_counter import SyllableCounter
-from mad_twinnet.scripts import twinnet
-from config import resources_dir, dp_err_matrix
+from umx.test import test_main
+from config import outputs_dir, dp_err_matrix, timestamps_dir
+from spleeter.separator import Separator
 
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s.%(msecs)03d - %(levelname)s - %(message)s',
                     datefmt='%H:%M:%S')
 
-def line_align(songs, dump_dir, boundary_algorithm='olda',
-               label_algorithm='fmc2d', do_twinnet=False):
+
+def line_align(songs, dump_dir=timestamps_dir, boundary_algorithm='olda',
+               label_algorithm='fmc2d', voice_isolation='spleeter'):
     """
     Aligns given audio with lyrics by line. If dump_dir is None, no timestamp
     yml is created.
@@ -48,17 +50,21 @@ def line_align(songs, dump_dir, boundary_algorithm='olda',
     sc = SyllableCounter()
 
     # Perform MaD TwinNet in one batch
-    if do_twinnet:
+    if voice_isolation == 'unmix':
+        print('Performing voice isolation using unmix')
         paths = [song['path'] for song in songs]
-        twinnet.twinnet_process(paths)
-    else:
-        #logging.info('Skipping MaD TwinNet')
-        print('Performing source separation using spleeter..')
+        test_main(input_files=paths, targets=['vocals'], outdir=outputs_dir)
+
+    if voice_isolation == 'spleeter':
+        print('Performing voice isolation using spleeter')
         audio_path = songs[0]['path']
         destination = os.path.splitext(audio_path)[0]
         if not os.path.exists(destination):
             separator = Separator('spleeter:2stems')
             separator.separate_to_file(audio_descriptor=audio_path, destination=destination)
+
+    if voice_isolation is None:
+        print('Skipping isolation')
 
     total_align_data = []
 
@@ -70,12 +76,13 @@ def line_align(songs, dump_dir, boundary_algorithm='olda',
 
         # Get file names
         mixed_path = song['path']
-        voice_path = os.path.splitext(song['path'])[0] + '_voice.wav'
-        if not do_twinnet:
+        voice_path = os.path.join(outputs_dir, os.path.splitext(os.path.basename(song['path']))[0] + '_vocals.wav')
+        if voice_isolation == 'spleeter':
             voice_path = os.path.join(destination, 'vocals.wav')
 
         # Get lyrics from Genius
         lyrics = get_lyrics(song['song'], song['artist'])
+        print('\nLyrics', lyrics)
 
         # Get syllable count from lyrics
         formatted_lyrics = sc.build_lyrics(lyrics)
@@ -138,7 +145,7 @@ def line_align(songs, dump_dir, boundary_algorithm='olda',
 
             # TODO: Fix distance scales
             mean_syl = mean(labels_density[label][0])
-            std_den  = stdev(labels_density[label][1])
+            std_den = stdev(labels_density[label][1])
             distance = sqrt(((mean_syl - gt_chorus_syl)/gt_chorus_syl)**2 + std_den**2)
 
             if distance < min_distance:
@@ -262,6 +269,8 @@ def line_align(songs, dump_dir, boundary_algorithm='olda',
                 line_start += line_duration
 
         if dump_dir is not None:
+            if not os.path.isdir(dump_dir):
+                os.mkdir(dump_dir)
             file_name = '{}_{}.yml'.format(song['artist'], song['song']).replace(' ', '')
             file_path = os.path.join(dump_dir, file_name)
 
@@ -271,6 +280,7 @@ def line_align(songs, dump_dir, boundary_algorithm='olda',
         total_align_data.append(align_data)
 
     return total_align_data
+
 
 def eval_align(dump_dir, tagged_dir, out_file, verbose=False):
     """
@@ -371,6 +381,7 @@ def eval_align(dump_dir, tagged_dir, out_file, verbose=False):
             f.write(error + '\n')
 
         f.write('\n')
+
 
 def iter_boundary_label_algorithms(songs, dump_dir, tagged_dir, evals_dir,
                                    do_twinnet=False, verbose=True):

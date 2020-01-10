@@ -1,0 +1,158 @@
+{
+  "annotations": [
+    {
+      "annotation_metadata": {
+        "curator": {
+          "name": "",
+          "email": ""
+        },
+        "annotator": {},
+        "version": "0.1.70",
+        "corpus": "",
+        "annotation_tools": "",
+        "annotation_rules": "",
+        "validation": "",
+        "data_source": "MSAF"
+      },
+      "namespace": "segment_open",
+      "data": [
+        {
+          "time": 0.0,
+          "duration": 3.250793650793651,
+          "value": "E",
+          "confidence": null
+        },
+        {
+          "time": 3.250793650793651,
+          "duration": 17.925804988662133,
+          "value": "A",
+          "confidence": null
+        },
+        {
+          "time": 21.176598639455783,
+          "duration": 17.414965986394556,
+          "value": "A",
+          "confidence": null
+        },
+        {
+          "time": 38.59156462585034,
+          "duration": 10.959818594104313,
+          "value": "B",
+          "confidence": null
+        },
+        {
+          "time": 49.55138321995465,
+          "duration": 4.133151927437638,
+          "value": "C",
+          "confidence": null
+        },
+        {
+          "time": 53.68453514739229,
+          "duration": 13.421133786848067,
+          "value": "B",
+          "confidence": null
+        },
+        {
+          "time": 67.10566893424036,
+          "duration": 6.687346938775519,
+          "value": "C",
+          "confidence": null
+        },
+        {
+          "time": 73.79301587301588,
+          "duration": 17.2756462585034,
+          "value": "A",
+          "confidence": null
+        },
+        {
+          "time": 91.06866213151928,
+          "duration": 17.414965986394563,
+          "value": "A",
+          "confidence": null
+        },
+        {
+          "time": 108.48362811791384,
+          "duration": 10.959818594104306,
+          "value": "B",
+          "confidence": null
+        },
+        {
+          "time": 119.44344671201814,
+          "duration": 4.133151927437638,
+          "value": "C",
+          "confidence": null
+        },
+        {
+          "time": 123.57659863945578,
+          "duration": 15.464489795918368,
+          "value": "B",
+          "confidence": null
+        },
+        {
+          "time": 139.04108843537415,
+          "duration": 21.826757369614512,
+          "value": "D",
+          "confidence": null
+        },
+        {
+          "time": 160.86784580498866,
+          "duration": 17.507845804988676,
+          "value": "D",
+          "confidence": null
+        },
+        {
+          "time": 178.37569160997734,
+          "duration": 4.365351473922885,
+          "value": "C",
+          "confidence": null
+        },
+        {
+          "time": 182.74104308390022,
+          "duration": 3.2507936507936677,
+          "value": "C",
+          "confidence": null
+        },
+        {
+          "time": 185.9918367346939,
+          "duration": 79.59800453514737,
+          "value": "B",
+          "confidence": null
+        },
+        {
+          "time": 265.58984126984126,
+          "duration": 0.01818594104310023,
+          "value": "E",
+          "confidence": null
+        }
+      ],
+      "sandbox": {
+        "boundaries_id": "olda",
+        "labels_id": "fmc2d",
+        "timestamp": "2020/01/10 17:38:45",
+        "annot_beats": false,
+        "feature": "pcp",
+        "framesync": false,
+        "transform": "/Users/stella/anaconda3/envs/py37/lib/python3.7/site-packages/msaf/algorithms/olda/models/EstBeats_BeatlesTUT.npy",
+        "dirichlet": false,
+        "xmeans": false,
+        "k": 4,
+        "2dfmc_offset": 4,
+        "label_norm_feats": Infinity,
+        "label_norm_floor": 0.1,
+        "label_norm_min_db": -80,
+        "hier": false
+      },
+      "time": 0,
+      "duration": null
+    }
+  ],
+  "file_metadata": {
+    "title": "",
+    "artist": "",
+    "release": "",
+    "duration": 265.60802721088436,
+    "identifiers": {},
+    "jams_version": "0.3.4"
+  },
+  "sandbox": {}
+}

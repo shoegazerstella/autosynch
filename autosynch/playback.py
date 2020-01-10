@@ -10,7 +10,8 @@ import yaml
 
 from align import line_align
 
-def playback(audio_file, align_file, artist=None, song=None, save=None,
+
+def playback(audio_file, align_file, artist=None, song=None, save=None, voice=None,
              chunk_size=1024, verbose=False):
     """
     Plays audio with lyrics displayed at designated timestamp. If align_file is
@@ -41,7 +42,8 @@ def playback(audio_file, align_file, artist=None, song=None, save=None,
 
         print('Processing...\n')
         print(audio_file)
-        align = line_align({'song': song, 'artist': artist, 'path': audio_file}, save)[0]['align']
+
+        align = line_align({'song': song, 'artist': artist, 'path': audio_file}, save, voice_isolation=voice)[0]['align']
     else:
         with open(align_file, 'r') as f:
             align = yaml.safe_load(f)['align']
@@ -101,10 +103,33 @@ def mp3_to_wav(mp3_file):
 
     return wav_file
 
+def youtube_download(artist, song, ext='mp3', outdir='audio'):
+    """
+    Downloads first result of search 'artist - song' from youtube. Requires youtube-dl to be installed
+
+    :param artist: artist
+    :type artist: str
+    :param song: song title
+    :type song: str
+    :param ext: extension of downloaded audio file. optional
+    :type ext: str
+    :return audio_file: audio_file of the downloaded mp3 song
+    :rtype: str
+    """
+    
+    filename = artist + '_' + song
+    audio_file = os.path.join(outdir, filename + '.' + ext)
+    search = 'ytsearch1:{} {}'.format( artist.replace('_',' '), song.replace('_',' ') )
+    cmd = [ 'youtube-dl', '--extract-audio', '--audio-format', ext, '-o', os.path.join(outdir, filename) + '.' + '%(ext)s', search]
+    subprocess.call(cmd)
+
+    return audio_file
+
+
 def main():
     parser = argparse.ArgumentParser(description='Play a song synchronized with its lyrics.')
 
-    parser.add_argument('audio_file',
+    parser.add_argument('-a', '--audio_file', nargs='?',
                         help='path to audio file to process')
     parser.add_argument('artist', nargs='?',
                         help='artist name: required if --align-file is not set')
@@ -114,17 +139,28 @@ def main():
                         help='path to previously saved align file')
     parser.add_argument('-s', '--save', nargs='?', const=os.getcwd(),
                         metavar='SAVE_DIR', help='directory for saving align file')
+    parser.add_argument('-v', '--voice', nargs='?', const=os.getcwd(),
+                        metavar='VOICE', help='which model to use for the source separation')
 
     args = vars(parser.parse_args())
 
     if args['align_file'] is None and (args['artist'] is None or args['song'] is None):
         parser.error('artist and song are required if --align-file is not set')
 
+    if (args['artist'] is None and args['song'] is None) and args['audio_file'] is None:
+        parser.error('artist and song are required if --audio_file is not set')
+
+    if args['audio_file'] is None:
+        print('Downloading audio from youtube..')
+        audio_file = youtube_download(args['artist'], args['song'], ext='mp3')
+        args['audio_file'] = audio_file
+
     # Convert if mp3
     if os.path.splitext(args['audio_file'])[1] == '.mp3':
         args['audio_file'] = mp3_to_wav(args['audio_file'])
 
     playback(**args)
+
 
 if __name__ == '__main__':
     main()
