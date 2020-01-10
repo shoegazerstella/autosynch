@@ -68,7 +68,7 @@ sudo apt install ffmpeg
 ## usage
 To play a song with its lyrics displayed at its calculated position:
 ```
-python autosynch/playback.py [audio_file.wav] [artist] [song_title]
+python playback.py -a [audio_file.wav] [artist] [song_title]
 ```
 It will take a few minutes to perform the alignment process. To save the
 alignment data to eliminate processing time in future plays of the same audio,
@@ -77,7 +77,7 @@ the alignment data.
 
 If you have already generated and saved an alignment data file:
 ```
-python autosynch/playback.py [audio_file.wav] -f [align_file.yml]
+python playback.py -a [audio_file.wav] -f [align_file.yml]
 ```
 
 If you would like to process an mp3 file, see [this section](#install-sox).
@@ -86,6 +86,11 @@ Running with an mp3 will automatically generate a wav file in the same directory
 *Note: If you did not use* `setup.sh`*, first make sure you set your Python*
 *environment correctly with* `export PYTHONPATH=$PYTHONPATH:./` *from the outer*
 `autosynch` *directory.*
+
+If you want to download the song with youtube-dl
+```
+python playback.py [artist] [song_title]
+```
 
 ## demos
 **Bruno Mars - Finesse**
